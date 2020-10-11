@@ -27,7 +27,7 @@ class CPU:
         self.ram[pc] = value
 
     def load(self):
-        print("loading self")
+        # print("loading self")
         """Load a program into memory."""
         if len(sys.argv) != 2:
             print('insufficient arguments')
@@ -56,16 +56,16 @@ class CPU:
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         # elif op == "SUB": etc
-        # elif op == "CMP":
-        #     cmp_a = self.reg[reg_a]
-        #     cmp_b = self.reg[reg_b]
-        #     self.flag = [0] * 8
-        #     if cmp_a < cmp_b:
-        #         self.flag[-3] = 1
-        #     if cmp_a > cmp_b:
-        #         self.flag[-2] = 1
-        #     if cmp_a == cmp_b:
-        #         self.flag[-1] = 1
+        elif op == "CMP":
+            cmp_a = self.reg[reg_a]
+            cmp_b = self.reg[reg_b]
+            self.flag = [0] * 8
+            if cmp_a < cmp_b:
+                self.flag[-3] = 1
+            if cmp_a > cmp_b:
+                self.flag[-2] = 1
+            if cmp_a == cmp_b:
+                self.flag[-1] = 1
         #     self.pc += 3
         else:
             raise Exception("Unsupported ALU operation")
@@ -92,7 +92,7 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        print("running self")
+        # print("running self")
         # print(f"{self.trace}")
         while self.running:
             # print(f"{self.trace}")
@@ -129,21 +129,21 @@ class CPU:
             self.reg[self.sp] += 1
             print(f"{top}")
             self.pc += 2
-        # elif execute == CMP:
-        #     print("cmp")
-        #     self.alu("CMP", op_a, op_b)
-        #     self.pc += 3
         elif execute == CMP:
             # print("cmp")
-            cmp_a = self.reg[op_a]
-            cmp_b = self.reg[op_b]
-            if cmp_a < cmp_b:
-                self.flag[-3] = 1
-            if cmp_a > cmp_b:
-                self.flag[-2] = 1
-            if cmp_a == cmp_b:
-                self.flag[-1] = 1
+            self.alu("CMP", op_a, op_b)
             self.pc += 3
+        # elif execute == CMP:
+        #     # print("cmp")
+        #     cmp_a = self.reg[op_a]
+        #     cmp_b = self.reg[op_b]
+        #     if cmp_a < cmp_b:
+        #         self.flag[-3] = 1
+        #     if cmp_a > cmp_b:
+        #         self.flag[-2] = 1
+        #     if cmp_a == cmp_b:
+        #         self.flag[-1] = 1
+        #     self.pc += 3
         elif execute == JMP:
             # print("jump")
             # print(f"{self.trace}")

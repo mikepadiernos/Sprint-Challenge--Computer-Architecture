@@ -2,10 +2,10 @@
 from cpu import *
 
 cpu = CPU()
-print("start")
+# print("start")
 
 cpu.load()
-print("loading")
+# print("loading")
 
 cpu.run()
-print("running")
+# print("running")
