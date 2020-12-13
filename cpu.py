@@ -16,6 +16,7 @@ class CPU:
         self.reg[self.sp] = len(self.ram) - 1
         self.pc = 0
         self.running = True
+        self.flag = [0] * 8
         self.instructions = {
             'LDI': 0b10000010,
             'PRN': 0b01000111,
@@ -23,10 +24,10 @@ class CPU:
             'MUL': 0b10100010,
             'POP': 0b01000110,
             'PUSH': 0b01000101,
-            'CMP': 0b01000101,
-            'JMP': 0b01000101,
-            'JEQ': 0b01000101,
-            'JNE': 0b01000101,
+            'CMP': 0b10100111,
+            'JMP': 0b01010100,
+            'JEQ': 0b01010101,
+            'JNE': 0b01010110,
         }
 
     def ram_read(self, pc):
@@ -60,6 +61,16 @@ class CPU:
         # elif op == "SUB": etc
         elif op == self.instructions['MUL']:
             self.reg[reg_a] *= self.reg[reg_b]
+        elif op == self.instructions['CMP']:
+            self.flag = [0] * 8
+            reg_a = self.reg[reg_a]
+            reg_b = self.reg[reg_b]
+            if reg_a < reg_b:
+                self.flag[-3] = 1
+            if reg_a > reg_b:
+                self.flag[-2] = 1
+            if reg_a == reg_b:
+                self.flag[-1] = 1
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -93,38 +104,56 @@ class CPU:
             # print(f'{operand_a}, {operand_b}')
 
             if execute == self.instructions['HLT']:
+                # print(f'HLT')
                 self.running = False
                 self.pc += 1
             elif execute == self.instructions['PRN']:
+                # print(f'PRN')
                 value = self.reg[operand_a]
                 register = self.ram_read(self.pc + 1)
                 print(f"The R{register} value is {value}.")
                 self.pc += 2
             elif execute == self.instructions['LDI']:
+                # print(f'LDI')
                 self.reg[operand_a] = operand_b
                 self.pc += 3
             elif execute == self.instructions['MUL']:
+                print(f'MUL')
                 self.alu(execute, operand_a, operand_b)
                 self.pc += 3
-            elif execute == self.instructions['POP']:
-                value = self.ram_read(self.reg[self.sp])
-                print(f'POP value {value}')
-                self.reg[operand_a] = value
-                self.reg[self.sp] += 1
-                self.pc += 2
             elif execute == self.instructions['PUSH']:
                 self.reg[self.sp] -= 1
                 value = self.reg[operand_a]
-                print(f'PUSH value {value}')
+                # print(f'PUSH value {value}')
+                # self.ram_write(self.reg[self.sp], self.reg[operand_a])
                 self.ram_write(self.reg[self.sp], value)
                 self.pc += 2
+            elif execute == self.instructions['POP']:
+                value = self.ram_read(self.reg[self.sp])
+                # print(f'POP value {value}')
+                # self.reg[operand_a] = self.ram_read(self.reg[self.sp])
+                self.reg[operand_a] = value
+                self.reg[self.sp] += 1
+                self.pc += 2
             elif execute == self.instructions['CMP']:
-                pass
+                # print(f'CMP')
+                self.alu(execute, operand_a, operand_b)
+                self.pc += 3
             elif execute == self.instructions['JMP']:
-                pass
+                # print(f'JMP')
+                self.pc = self.reg[operand_a]
             elif execute == self.instructions['JEQ']:
-                pass
+                # print(f'JEQ')
+                if self.flag[-1] == 1:
+                    self.pc = self.reg[operand_a]
+                else:
+                    self.pc += 2
             elif execute == self.instructions['JNE']:
-                pass
+                # print(f'JNE')
+                if self.flag[-1] == 0:
+                    self.pc = self.reg[operand_a]
+                else:
+                    self.pc += 2
             else:
+                print(f'exiting...')
                 sys.exit(1)
