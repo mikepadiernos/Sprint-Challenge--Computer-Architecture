@@ -106,17 +106,25 @@ class CPU:
             elif execute == self.instructions['MUL']:
                 self.alu(execute, operand_a, operand_b)
                 self.pc += 3
-            elif execute == self.instructions['PUSH']:
-                self.reg[self.sp] -= 1
-                value = self.reg[operand_a]
-                print(f'PUSH value {value}')
-                self.ram_write(self.reg[self.sp], value)
-                self.pc += 2
             elif execute == self.instructions['POP']:
                 value = self.ram_read(self.reg[self.sp])
                 print(f'POP value {value}')
                 self.reg[operand_a] = value
                 self.reg[self.sp] += 1
                 self.pc += 2
+            elif execute == self.instructions['PUSH']:
+                self.reg[self.sp] -= 1
+                value = self.reg[operand_a]
+                print(f'PUSH value {value}')
+                self.ram_write(self.reg[self.sp], value)
+                self.pc += 2
+            elif execute == self.instructions['CMP']:
+                pass
+            elif execute == self.instructions['JMP']:
+                pass
+            elif execute == self.instructions['JEQ']:
+                pass
+            elif execute == self.instructions['JNE']:
+                pass
             else:
                 sys.exit(1)
